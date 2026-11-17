@@ -13,18 +13,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Sulitpackgoui">
-<<<<<<< HEAD
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Sulitpackgoui"
-            android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-=======
-
-
         <!-- SPLASH SCREEN -->
 
         <activity
@@ -39,8 +27,6 @@
 
                 <category
                     android:name="android.intent.category.LAUNCHER" />
->>>>>>> ccb30afa8b2d2166dff38729063be1e4d34edd41
-
             </intent-filter>
 
         </activity>

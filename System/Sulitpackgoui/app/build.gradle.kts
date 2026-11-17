@@ -1,7 +1,11 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
 }
+
+
+
 
 android {
     namespace = "com.example.sulitpackgoui"
@@ -43,24 +47,7 @@ android {
 }
 
 dependencies {
-<<<<<<< HEAD
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    testImplementation(libs.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.junit)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    implementation("com.google.android.material:material:1.14.0")
-=======
+
     implementation(
         platform(
             libs.androidx.compose.bom
@@ -150,5 +137,4 @@ dependencies {
     implementation(
         "com.squareup.okhttp3:okhttp:5.3.2"
     )
->>>>>>> ccb30afa8b2d2166dff38729063be1e4d34edd41
 }
