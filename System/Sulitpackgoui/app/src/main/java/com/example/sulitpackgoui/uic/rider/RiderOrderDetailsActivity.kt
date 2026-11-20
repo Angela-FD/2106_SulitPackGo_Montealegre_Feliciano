@@ -1,3 +1,4 @@
+
 package com.example.sulitpackgoui.uic.rider
 
 import android.content.Intent
@@ -16,614 +17,335 @@ import com.google.firebase.auth.FirebaseAuth
 
 class RiderOrderDetailsActivity : ComponentActivity() {
 
-    private var auth =
-        FirebaseAuth.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private val riderDatabase = RiderDatabase()
+    private val riderOrder = RiderOrder()
+    private val customerDatabase = CustomerDatabase()
 
+    private var currentRider = Rider()
+    private var currentOrder = OrderData()
 
-    private var riderDatabase =
-        RiderDatabase()
+    private var riderLoaded = false
+    private var orderLoaded = false
+    private var acceptingOrder = false
 
+    private lateinit var tvOrderId: TextView
+    private lateinit var tvFee: TextView
+    private lateinit var tvCustomerName: TextView
+    private lateinit var tvCustomerPhone: TextView
+    private lateinit var tvPickupAddress: TextView
+    private lateinit var tvPickupDetails: TextView
+    private lateinit var tvDropoffAddress: TextView
+    private lateinit var tvDropoffDetails: TextView
+    private lateinit var tvDescription: TextView
+    private lateinit var tvWeight: TextView
+    private lateinit var tvDistance: TextView
+    private lateinit var tvVehicle: TextView
 
-    private var riderOrder =
-        RiderOrder()
+    private lateinit var btnAccept: MaterialButton
+    private lateinit var btnDecline: MaterialButton
 
-
-    private var customerDatabase =
-        CustomerDatabase()
-
-
-    private var currentRider =
-        Rider()
-
-
-    private var currentOrder =
-        OrderData()
-
-
-    private var riderLoaded =
-        false
-
-
-    private var orderLoaded =
-        false
-
-
-    private lateinit var tvOrderId:
-            TextView
-
-    private lateinit var tvFee:
-            TextView
-
-    private lateinit var tvCustomerName:
-            TextView
-
-    private lateinit var tvCustomerPhone:
-            TextView
-
-    private lateinit var tvPickupAddress:
-            TextView
-
-    private lateinit var tvPickupDetails:
-            TextView
-
-    private lateinit var tvDropoffAddress:
-            TextView
-
-    private lateinit var tvDropoffDetails:
-            TextView
-
-    private lateinit var tvDescription:
-            TextView
-
-    private lateinit var tvWeight:
-            TextView
-
-    private lateinit var tvDistance:
-            TextView
-
-    private lateinit var tvVehicle:
-            TextView
-
-    private lateinit var btnAccept:
-            MaterialButton
-
-    private lateinit var btnDecline:
-            MaterialButton
-
-
-    override fun onCreate(
-        savedInstanceState: Bundle?
-    ) {
-
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-        setContentView(
-            R.layout.rider_order_details
-        )
-
+        setContentView(R.layout.rider_order_details)
 
         setupViews()
-
         setupButtons()
 
-
-        var orderId =
-            readTextExtra(
-                "orderId"
-            )
-
+        val orderId = intent.getStringExtra("orderId").orEmpty()
 
         if (orderId.isBlank()) {
-
-            showMessage(
-                "Order not found."
-            )
-
-
+            showMessage("Order not found.")
             finish()
-
             return
         }
 
+        btnAccept.isEnabled = false
 
-        loadRider(
-            orderId
-        )
+        loadRider(orderId)
     }
-
 
     private fun setupViews() {
+        tvOrderId = findViewById(R.id.tvOrderId)
+        tvFee = findViewById(R.id.tvFee)
+        tvCustomerName = findViewById(R.id.tvCustomerName)
+        tvCustomerPhone = findViewById(R.id.tvCustomerPhone)
+        tvPickupAddress = findViewById(R.id.tvPickupAddress)
+        tvPickupDetails = findViewById(R.id.tvPickupDetails)
+        tvDropoffAddress = findViewById(R.id.tvDropoffAddress)
+        tvDropoffDetails = findViewById(R.id.tvDropoffDetails)
+        tvDescription = findViewById(R.id.tvDescription)
+        tvWeight = findViewById(R.id.tvWeight)
+        tvDistance = findViewById(R.id.tvDistance)
+        tvVehicle = findViewById(R.id.tvVehicle)
 
-        tvOrderId =
-            findViewById(
-                R.id.tvOrderId
-            )
-
-
-        tvFee =
-            findViewById(
-                R.id.tvFee
-            )
-
-
-        tvCustomerName =
-            findViewById(
-                R.id.tvCustomerName
-            )
-
-
-        tvCustomerPhone =
-            findViewById(
-                R.id.tvCustomerPhone
-            )
-
-
-        tvPickupAddress =
-            findViewById(
-                R.id.tvPickupAddress
-            )
-
-
-        tvPickupDetails =
-            findViewById(
-                R.id.tvPickupDetails
-            )
-
-
-        tvDropoffAddress =
-            findViewById(
-                R.id.tvDropoffAddress
-            )
-
-
-        tvDropoffDetails =
-            findViewById(
-                R.id.tvDropoffDetails
-            )
-
-
-        tvDescription =
-            findViewById(
-                R.id.tvDescription
-            )
-
-
-        tvWeight =
-            findViewById(
-                R.id.tvWeight
-            )
-
-
-        tvDistance =
-            findViewById(
-                R.id.tvDistance
-            )
-
-
-        tvVehicle =
-            findViewById(
-                R.id.tvVehicle
-            )
-
-
-        btnAccept =
-            findViewById(
-                R.id.btnAccept
-            )
-
-
-        btnDecline =
-            findViewById(
-                R.id.btnDecline
-            )
+        btnAccept = findViewById(R.id.btnAccept)
+        btnDecline = findViewById(R.id.btnDecline)
     }
 
-
     private fun setupButtons() {
-
-        var btnBack =
-            findViewById<TextView>(
-                R.id.btnBack
-            )
-
-
-        btnBack.setOnClickListener {
-
+        findViewById<TextView>(R.id.btnBack).setOnClickListener {
             finish()
         }
-
 
         btnDecline.setOnClickListener {
-
+            // This only dismisses the details screen.
+            // It does not reject or delete the shared order.
             finish()
         }
 
-
         btnAccept.setOnClickListener {
-
             acceptOrder()
         }
     }
 
-
-    private fun loadRider(
-        orderId: String
-    ) {
-
-        var user =
-            auth.currentUser
-
+    private fun loadRider(orderId: String) {
+        val user = auth.currentUser
 
         if (user == null) {
-
-            showMessage(
-                "Rider is not logged in."
-            )
-
-
+            showMessage("Rider is not logged in.")
             finish()
-
             return
         }
 
+        riderDatabase.getRider(user.uid) { success, message, rider ->
 
-        riderDatabase.getRider(
-            user.uid
-        ) { success, message, rider ->
-
-
-            if (success == false) {
-
-                showMessage(
-                    message
-                )
-
-            } else if (
-                rider == null
-            ) {
-
-                showMessage(
-                    "Rider profile not found."
-                )
-
-            } else {
-
-                currentRider =
-                    rider
-
-
-                riderLoaded =
-                    true
-
-
-                loadOrder(
-                    orderId
-                )
+            if (!success || rider == null) {
+                showMessage(message)
+                finish()
+                return@getRider
             }
+
+            currentRider = rider
+            riderLoaded = true
+
+            loadOrder(orderId)
         }
     }
 
+    private fun loadOrder(orderId: String) {
+        riderOrder.getOrder(orderId) { success, message, order ->
 
-    private fun loadOrder(
-        orderId: String
-    ) {
-
-        riderOrder.getOrder(
-            orderId
-        ) { success, message, order ->
-
-
-            if (success == false) {
-
-                showMessage(
-                    message
-                )
-
-
+            if (!success || order == null) {
+                showMessage(message)
                 finish()
-
-            } else if (
-                order == null
-            ) {
-
-                showMessage(
-                    "Order not found."
-                )
-
-
-                finish()
-
-            } else {
-
-                currentOrder =
-                    order
-
-
-                orderLoaded =
-                    true
-
-
-                showOrder()
-
-                loadCustomer(
-                    order.customerId
-                )
+                return@getOrder
             }
+
+            currentOrder = order
+            orderLoaded = true
+
+            showOrder()
+            loadCustomer(order.customerId)
+            validateOrderAvailability()
         }
     }
 
+    private fun validateOrderAvailability() {
+        if (!riderLoaded || !orderLoaded) {
+            btnAccept.isEnabled = false
+            return
+        }
+
+        when {
+            currentOrder.status != "Pending" -> {
+                btnAccept.isEnabled = false
+                showMessage("This order is no longer available.")
+            }
+
+            currentOrder.vehicleType != currentRider.vehicleType -> {
+                btnAccept.isEnabled = false
+                showMessage(
+                    "This order requires a ${currentOrder.vehicleType}."
+                )
+            }
+
+            currentRider.currentOrderId.isNotBlank() -> {
+                btnAccept.isEnabled = false
+                showMessage("You already have an active delivery.")
+            }
+
+            !currentRider.isAvailable -> {
+                btnAccept.isEnabled = false
+                showMessage("You are currently unavailable.")
+            }
+
+            else -> {
+                btnAccept.isEnabled = true
+            }
+        }
+    }
 
     private fun showOrder() {
+        tvOrderId.text = "Order #${currentOrder.orderId}"
+        tvFee.text = formatMoney(currentOrder.fee)
 
-        tvOrderId.text =
-            "Order #" +
-                    currentOrder.orderId
-
-
-        tvFee.text =
-            formatMoney(
-                currentOrder.fee
-            )
-
-
-        tvPickupAddress.text =
-            currentOrder.pickupAddress
-
-
-        if (
-            currentOrder.pickupAddressDetails.isBlank()
-        ) {
-
-            tvPickupDetails.text =
+        tvPickupAddress.text = currentOrder.pickupAddress
+        tvPickupDetails.text =
+            currentOrder.pickupAddressDetails.ifBlank {
                 "No additional pickup details."
+            }
 
-        } else {
-
-            tvPickupDetails.text =
-                currentOrder.pickupAddressDetails
-        }
-
-
-        tvDropoffAddress.text =
-            currentOrder.dropAddress
-
-
-        if (
-            currentOrder.dropAddressDetails.isBlank()
-        ) {
-
-            tvDropoffDetails.text =
+        tvDropoffAddress.text = currentOrder.dropAddress
+        tvDropoffDetails.text =
+            currentOrder.dropAddressDetails.ifBlank {
                 "No additional drop-off details."
+            }
 
-        } else {
-
-            tvDropoffDetails.text =
-                currentOrder.dropAddressDetails
-        }
-
-
-        if (
-            currentOrder.description.isBlank()
-        ) {
-
-            tvDescription.text =
+        tvDescription.text =
+            currentOrder.description.ifBlank {
                 "No description"
-
-        } else {
-
-            tvDescription.text =
-                currentOrder.description
-        }
-
+            }
 
         tvWeight.text =
-            "Weight: " +
-                    formatNumber(
-                        currentOrder.weight
-                    ) +
-                    " kg"
-
+            "Weight: ${formatNumber(currentOrder.weight)} kg"
 
         tvDistance.text =
-            "Distance: " +
-                    formatNumber(
-                        currentOrder.distance
-                    ) +
-                    " km"
-
+            "Distance: ${formatNumber(currentOrder.distance)} km"
 
         tvVehicle.text =
-            "Vehicle: " +
-                    currentOrder.vehicleType
+            "Vehicle: ${currentOrder.vehicleType}"
     }
 
-
-    private fun loadCustomer(
-        customerId: String
-    ) {
-
+    private fun loadCustomer(customerId: String) {
         if (customerId.isBlank()) {
-
             showUnknownCustomer()
-
             return
         }
 
+        customerDatabase.getCustomer(customerId) { success, _, customer ->
 
-        customerDatabase.getCustomer(
-            customerId
-        ) { success, message, customer ->
-
-
-            if (success == false) {
-
+            if (!success || customer == null) {
                 showUnknownCustomer()
-
-            } else if (
-                customer == null
-            ) {
-
-                showUnknownCustomer()
-
-            } else {
-
-                tvCustomerName.text =
-                    customer.name
-
-
-                if (
-                    customer.phoneNumber.isBlank()
-                ) {
-
-                    tvCustomerPhone.text =
-                        "Not provided"
-
-                } else {
-
-                    tvCustomerPhone.text =
-                        customer.phoneNumber
-                }
+                return@getCustomer
             }
+
+            tvCustomerName.text = customer.name
+
+            tvCustomerPhone.text =
+                customer.phoneNumber.ifBlank {
+                    "Not provided"
+                }
         }
     }
-
 
     private fun showUnknownCustomer() {
-
-        tvCustomerName.text =
-            "Customer"
-
-
-        tvCustomerPhone.text =
-            "Not provided"
+        tvCustomerName.text = "Customer"
+        tvCustomerPhone.text = "Not provided"
     }
 
-
     private fun acceptOrder() {
+        if (acceptingOrder) return
 
-        if (riderLoaded == false) {
-
-            showMessage(
-                "Rider information is still loading."
-            )
-
+        if (!riderLoaded) {
+            showMessage("Rider information is still loading.")
             return
         }
 
-
-        if (orderLoaded == false) {
-
-            showMessage(
-                "Order information is still loading."
-            )
-
+        if (!orderLoaded) {
+            showMessage("Order information is still loading.")
             return
         }
 
+        if (currentOrder.status != "Pending") {
+            showMessage("This order is no longer available.")
+            btnAccept.isEnabled = false
+            return
+        }
 
-        btnAccept.isEnabled =
-            false
-
+        acceptingOrder = true
+        btnAccept.isEnabled = false
+        btnDecline.isEnabled = false
+        btnAccept.text = "Accepting..."
 
         riderOrder.acceptOrder(
             currentRider,
             currentOrder.orderId
         ) { success, message ->
 
+            acceptingOrder = false
 
             if (success) {
-
-                showMessage(
-                    message
-                )
-
-
+                showMessage(message)
                 openCurrentDelivery()
-
             } else {
+                btnAccept.text = "Accept Order"
+                btnDecline.isEnabled = true
 
-                btnAccept.isEnabled =
-                    true
-
-
-                showMessage(
-                    message
-                )
+                // Refresh the order and rider before allowing
+                // another attempt.
+                refreshBeforeRetry(message)
             }
         }
     }
 
+    private fun refreshBeforeRetry(errorMessage: String) {
+        val user = auth.currentUser
+
+        if (user == null) {
+            showMessage("Rider is not logged in.")
+            finish()
+            return
+        }
+
+        riderDatabase.getRider(user.uid) { riderSuccess, _, rider ->
+
+            if (!riderSuccess || rider == null) {
+                showMessage(errorMessage)
+                finish()
+                return@getRider
+            }
+
+            currentRider = rider
+
+            riderOrder.getOrder(currentOrder.orderId) {
+                    orderSuccess, _, order ->
+
+                if (!orderSuccess || order == null) {
+                    showMessage("This order is no longer available.")
+                    finish()
+                    return@getOrder
+                }
+
+                currentOrder = order
+
+                if (currentOrder.status == "Pending" &&
+                    currentRider.isAvailable &&
+                    currentRider.currentOrderId.isBlank() &&
+                    currentOrder.vehicleType == currentRider.vehicleType
+                ) {
+                    btnAccept.isEnabled = true
+                    showMessage(errorMessage)
+                } else {
+                    btnAccept.isEnabled = false
+                    showMessage("This order is no longer available to you.")
+                }
+            }
+        }
+    }
 
     private fun openCurrentDelivery() {
-
-        var intent =
-            Intent(
-                this,
-                RiderActiveDeliveryActivity::class.java
-            )
-
-
-        intent.addFlags(
-            Intent.FLAG_ACTIVITY_CLEAR_TOP
+        val intent = Intent(
+            this,
+            RiderActiveDeliveryActivity::class.java
         )
 
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-        startActivity(
-            intent
-        )
-
-
+        startActivity(intent)
         finish()
     }
 
-
-    private fun readTextExtra(
-        name: String
-    ): String {
-
-        var value =
-            intent.getStringExtra(
-                name
-            )
-
-
-        if (value == null) {
-
-            return ""
-        }
-
-
-        return value
+    private fun formatNumber(number: Double): String {
+        return String.format("%.2f", number)
     }
 
-
-    private fun formatNumber(
-        number: Double
-    ): String {
-
-        return String.format(
-            "%.2f",
-            number
-        )
+    private fun formatMoney(amount: Double): String {
+        return "₱${formatNumber(amount)}"
     }
 
-
-    private fun formatMoney(
-        amount: Double
-    ): String {
-
-        return "₱" +
-                formatNumber(
-                    amount
-                )
-    }
-
-
-    private fun showMessage(
-        message: String
-    ) {
-
+    private fun showMessage(message: String) {
         Toast.makeText(
             this,
             message,

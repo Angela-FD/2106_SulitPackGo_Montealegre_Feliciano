@@ -1,3 +1,4 @@
+
 package com.example.sulitpackgoui.uic.rider
 
 import android.content.Intent
@@ -15,459 +16,211 @@ import com.google.firebase.auth.FirebaseAuth
 
 class RiderHomeActivity : ComponentActivity() {
 
-    private var firebaseAuth =
-        FirebaseAuth.getInstance()
+    private val firebaseAuth = FirebaseAuth.getInstance()
+    private val riderDatabase = RiderDatabase()
+    private val riderOrder = RiderOrder()
 
+    private var currentRider = Rider()
+    private var riderLoaded = false
+    private var availabilityUpdating = false
 
-    private var riderDatabase =
-        RiderDatabase()
+    private lateinit var tvRiderName: TextView
+    private lateinit var tvStatus: TextView
+    private lateinit var tvCurrentTitle: TextView
+    private lateinit var tvCurrentSubtitle: TextView
+    private lateinit var switchOnline: SwitchCompat
+    private lateinit var btnViewAvailableOrders: MaterialButton
 
-
-    private var riderOrder =
-        RiderOrder()
-
-
-    private var currentRider =
-        Rider()
-
-
-    private var riderLoaded =
-        false
-
-
-    private lateinit var tvRiderName:
-            TextView
-
-    private lateinit var tvStatus:
-            TextView
-
-    private lateinit var tvCurrentTitle:
-            TextView
-
-    private lateinit var tvCurrentSubtitle:
-            TextView
-
-    private lateinit var switchOnline:
-            SwitchCompat
-
-    private lateinit var btnViewAvailableOrders:
-            MaterialButton
-
-
-    override fun onCreate(
-        savedInstanceState: Bundle?
-    ) {
-
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-        setContentView(
-            R.layout.rider_home
-        )
-
+        setContentView(R.layout.rider_home)
 
         setupViews()
-
         setupButtons()
-
         setupNavigation()
     }
 
-
     override fun onResume() {
-
         super.onResume()
-
-
         loadRider()
     }
 
-
     private fun setupViews() {
-
-        tvRiderName =
-            findViewById(
-                R.id.tvRiderName
-            )
-
-
-        tvStatus =
-            findViewById(
-                R.id.tvStatus
-            )
-
-
-        tvCurrentTitle =
-            findViewById(
-                R.id.tvCurrentTitle
-            )
-
-
-        tvCurrentSubtitle =
-            findViewById(
-                R.id.tvCurrentSubtitle
-            )
-
-
-        switchOnline =
-            findViewById(
-                R.id.switchOnline
-            )
-
-
-        btnViewAvailableOrders =
-            findViewById(
-                R.id.btnViewAvailableOrders
-            )
+        tvRiderName = findViewById(R.id.tvRiderName)
+        tvStatus = findViewById(R.id.tvStatus)
+        tvCurrentTitle = findViewById(R.id.tvCurrentTitle)
+        tvCurrentSubtitle = findViewById(R.id.tvCurrentSubtitle)
+        switchOnline = findViewById(R.id.switchOnline)
+        btnViewAvailableOrders = findViewById(R.id.btnViewAvailableOrders)
     }
 
-
     private fun setupButtons() {
-
         btnViewAvailableOrders.setOnClickListener {
-
             openDeliveryScreen()
         }
 
-
         switchOnline.setOnClickListener {
-
-            if (riderLoaded) {
-
-                changeAvailability(
-                    switchOnline.isChecked
-                )
+            if (!riderLoaded || availabilityUpdating) {
+                switchOnline.isChecked = currentRider.isAvailable
+                return@setOnClickListener
             }
+
+            changeAvailability(switchOnline.isChecked)
         }
     }
 
-
     private fun setupNavigation() {
-
-        var navSettings =
-            findViewById<TextView>(
-                R.id.navSettings
-            )
-
-
-        var navHome =
-            findViewById<TextView>(
-                R.id.navHome
-            )
-
-
-        var navHistory =
-            findViewById<TextView>(
-                R.id.navHistory
-            )
-
-
-        navSettings.setOnClickListener {
-
-            var intent =
-                Intent(
-                    this,
-                    RiderProfileActivity::class.java
-                )
-
-
+        findViewById<TextView>(R.id.navSettings).setOnClickListener {
             startActivity(
-                intent
+                Intent(this, RiderProfileActivity::class.java)
             )
         }
 
-
-        navHome.setOnClickListener {
-
+        findViewById<TextView>(R.id.navHome).setOnClickListener {
             loadRider()
         }
 
-
-        navHistory.setOnClickListener {
-
-            var intent =
-                Intent(
-                    this,
-                    RiderHistoryActivity::class.java
-                )
-
-
+        findViewById<TextView>(R.id.navHistory).setOnClickListener {
             startActivity(
-                intent
+                Intent(this, RiderHistoryActivity::class.java)
             )
         }
     }
 
-
     private fun openDeliveryScreen() {
-
-        if (riderLoaded == false) {
-
-            showMessage(
-                "Rider information is still loading."
-            )
-
+        if (!riderLoaded) {
+            showMessage("Rider information is still loading.")
             return
         }
 
-
-        if (
-            currentRider.currentOrderId.isNotBlank()
-        ) {
-
-            var intent =
-                Intent(
-                    this,
-                    RiderActiveDeliveryActivity::class.java
-                )
-
-
+        if (currentRider.currentOrderId.isNotBlank()) {
             startActivity(
-                intent
+                Intent(this, RiderActiveDeliveryActivity::class.java)
             )
-
-
             return
         }
 
-
-        if (
-            currentRider.isAvailable == false
-        ) {
-
-            showMessage(
-                "Turn your availability ON first."
-            )
-
+        if (!currentRider.isAvailable) {
+            showMessage("Turn your availability ON first.")
             return
         }
-
-
-        var intent =
-            Intent(
-                this,
-                RiderAvailableOrdersActivity::class.java
-            )
-
 
         startActivity(
-            intent
+            Intent(this, RiderAvailableOrdersActivity::class.java)
         )
     }
 
-
     private fun loadRider() {
-
-        var currentUser =
-            firebaseAuth.currentUser
-
+        val currentUser = firebaseAuth.currentUser
 
         if (currentUser == null) {
-
-            showMessage(
-                "Rider is not logged in."
-            )
-
-
+            showMessage("Rider is not logged in.")
             finish()
-
             return
         }
 
+        riderLoaded = false
 
-        riderLoaded =
-            false
+        riderDatabase.getRider(currentUser.uid) { success, message, rider ->
 
-
-        riderDatabase.getRider(
-            currentUser.uid
-        ) { success, message, rider ->
-
-
-            if (success == false) {
-
-                showMessage(
-                    message
-                )
-
-            } else if (
-                rider == null
-            ) {
-
-                showMessage(
-                    "Rider profile not found."
-                )
-
-            } else {
-
-                currentRider =
-                    rider
-
-
-                riderLoaded =
-                    true
-
-
-                showRiderInformation()
-
-                loadCurrentDelivery()
+            if (!success || rider == null) {
+                showMessage(message)
+                return@getRider
             }
+
+            currentRider = rider
+            riderLoaded = true
+
+            showRiderInformation()
+            loadCurrentDelivery()
         }
     }
-
 
     private fun showRiderInformation() {
+        tvRiderName.text = currentRider.name
 
-        tvRiderName.text =
-            currentRider.name
+        switchOnline.isChecked = currentRider.isAvailable
 
+        if (availabilityUpdating) {
+            switchOnline.isEnabled = false
+            return
+        }
 
-        switchOnline.isChecked =
-            currentRider.isAvailable
-
-
-        if (
-            currentRider.currentOrderId.isNotBlank()
-        ) {
-
-            tvStatus.text =
-                "You have an active delivery."
-
-
-            switchOnline.isEnabled =
-                false
-
+        if (currentRider.currentOrderId.isNotBlank()) {
+            tvStatus.text = "You have an active delivery."
+            switchOnline.isEnabled = false
         } else {
+            switchOnline.isEnabled = true
 
-            switchOnline.isEnabled =
-                true
-
-
-            if (
-                currentRider.isAvailable
-            ) {
-
-                tvStatus.text =
-                    "Available for delivery requests."
-
+            tvStatus.text = if (currentRider.isAvailable) {
+                "Available for delivery requests."
             } else {
-
-                tvStatus.text =
-                    "You are currently unavailable."
+                "You are currently unavailable."
             }
         }
     }
 
+    private fun changeAvailability(isAvailable: Boolean) {
+        if (availabilityUpdating) return
 
-    private fun changeAvailability(
-        isAvailable: Boolean
-    ) {
+        availabilityUpdating = true
+        switchOnline.isEnabled = false
 
         riderDatabase.updateAvailability(
             currentRider,
             isAvailable
         ) { success, message ->
 
+            availabilityUpdating = false
 
             if (success) {
-
                 showRiderInformation()
-
             } else {
+                switchOnline.isChecked = currentRider.isAvailable
 
-                switchOnline.isChecked =
-                    currentRider.isAvailable
+                switchOnline.isEnabled =
+                    currentRider.currentOrderId.isBlank()
             }
 
-
-            showMessage(
-                message
-            )
+            showMessage(message)
         }
     }
 
-
     private fun loadCurrentDelivery() {
-
-        if (
-            currentRider.currentOrderId.isBlank()
-        ) {
-
-            tvCurrentTitle.text =
-                "No active delivery"
-
+        if (currentRider.currentOrderId.isBlank()) {
+            tvCurrentTitle.text = "No active delivery"
 
             tvCurrentSubtitle.text =
                 "Browse available orders and accept one when you are ready."
 
-
-            btnViewAvailableOrders.text =
-                "View available orders"
-
-
+            btnViewAvailableOrders.text = "View available orders"
             return
         }
 
+        riderOrder.getCurrentOrder(currentRider) { success, message, order ->
 
-        riderOrder.getCurrentOrder(
-            currentRider
-        ) { success, message, order ->
-
-
-            if (success == false) {
-
-                showCurrentOrderError(
-                    message
-                )
-
-            } else if (
-                order == null
-            ) {
-
-                showCurrentOrderError(
-                    "Unable to load delivery."
-                )
-
-            } else {
-
-                tvCurrentTitle.text =
-                    order.status
-
-
-                tvCurrentSubtitle.text =
-                    order.pickupAddress +
-                            " → " +
-                            order.dropAddress
-
-
-                btnViewAvailableOrders.text =
-                    "Open current delivery"
+            if (!success || order == null) {
+                showCurrentOrderError(message)
+                return@getCurrentOrder
             }
+
+            tvCurrentTitle.text = order.status
+
+            tvCurrentSubtitle.text =
+                "${order.pickupAddress} → ${order.dropAddress}"
+
+            btnViewAvailableOrders.text = "Open current delivery"
         }
     }
 
-
-    private fun showCurrentOrderError(
-        message: String
-    ) {
-
-        tvCurrentTitle.text =
-            "Unable to load delivery"
-
-
-        tvCurrentSubtitle.text =
-            message
-
-
-        btnViewAvailableOrders.text =
-            "Open current delivery"
+    private fun showCurrentOrderError(message: String) {
+        tvCurrentTitle.text = "Unable to load delivery"
+        tvCurrentSubtitle.text = message
+        btnViewAvailableOrders.text = "Open current delivery"
     }
 
-
-    private fun showMessage(
-        message: String
-    ) {
-
+    private fun showMessage(message: String) {
         Toast.makeText(
             this,
             message,

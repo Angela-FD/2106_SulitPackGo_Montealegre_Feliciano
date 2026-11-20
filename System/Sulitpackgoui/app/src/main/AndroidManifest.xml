@@ -152,6 +152,50 @@
             android:exported="false"
             android:theme="@style/Theme.Sulitpackgoui" />
 
+        <activity
+            android:name=".uic.admin.AdminDashboardActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sulitpackgoui" />
+
+        <activity
+            android:name=".uic.admin.AdminManageOrdersActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sulitpackgoui" />
+
+        <activity
+            android:name=".uic.admin.AdminManageRidersActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sulitpackgoui" />
+
+        <activity
+            android:name=".uic.admin.AdminManageUsersActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sulitpackgoui" />
+
+        <activity
+            android:name=".uic.admin.AdminVehicleFeesActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sulitpackgoui" />
+
+        <activity
+            android:name=".uic.admin.AdminEditVehicleFeeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sulitpackgoui" />
+
+        <activity
+            android:name=".uic.admin.AdminCreateRiderActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sulitpackgoui"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".uic.admin.AdminOrderDetailsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Sulitpackgoui" />
+
+
+
+
 
     </application>
 

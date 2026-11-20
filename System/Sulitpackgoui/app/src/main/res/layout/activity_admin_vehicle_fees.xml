@@ -1,12 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_login"
-    android:fillViewport="true"
-    tools:context=".MainActivity">
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,14 +18,13 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Back"
             android:padding="10dp"
-            android:scaleType="fitCenter"
             android:src="@drawable/ic_back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Vehicles"
+            android:text="Vehicle Fees"
             android:textColor="@android:color/black"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -37,12 +33,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Delivery fees for each vehicle type."
+            android:text="Manage delivery fees for each vehicle type."
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
+        <!-- MOTOR -->
+
         <LinearLayout
-            android:id="@+id/cardVehicleMotor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -70,89 +67,63 @@
                     android:id="@+id/btnEditMotor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="8dp"
                     android:text="Edit"
                     android:textColor="#2B8F3F"
-                    android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="BASE FEE"
+                android:textColor="#2B8F3F"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvMotorBaseFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
+                android:text="RATE PER KM"
+                android:textColor="#2B8F3F"
+                android:textSize="10sp"
+                android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/tvMotorRate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvMotorStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#B00020"
+                android:visibility="gone" />
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="PER KM"
-                        android:textColor="#2B8F3F"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvMotorRate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minHeight="20dp"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        tools:text="₱10" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="MAX WEIGHT"
-                        android:textColor="#2B8F3F"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvMotorMaxWeight"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minHeight="20dp"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        tools:text="20 kg" />
-                </LinearLayout>
-
-            </LinearLayout>
         </LinearLayout>
 
+        <!-- TRICYCLE -->
+
         <LinearLayout
-            android:id="@+id/cardVehicleTricycle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/bg_input_outline"
             android:backgroundTint="@android:color/white"
             android:orientation="vertical"
@@ -177,89 +148,63 @@
                     android:id="@+id/btnEditTricycle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="8dp"
                     android:text="Edit"
                     android:textColor="#2B8F3F"
-                    android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="BASE FEE"
+                android:textColor="#2B8F3F"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTricycleBaseFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
+                android:text="RATE PER KM"
+                android:textColor="#2B8F3F"
+                android:textSize="10sp"
+                android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvTricycleRate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
 
-                </LinearLayout>
+            <TextView
+                android:id="@+id/tvTricycleStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#B00020"
+                android:visibility="gone" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="PER KM"
-                        android:textColor="#2B8F3F"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvTricycleRate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minHeight="20dp"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        tools:text="₱14" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="MAX WEIGHT"
-                        android:textColor="#2B8F3F"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvTricycleMaxWeight"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minHeight="20dp"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        tools:text="100 kg" />
-                </LinearLayout>
-
-
-            </LinearLayout>
         </LinearLayout>
 
+        <!-- VAN -->
+
         <LinearLayout
-            android:id="@+id/cardVehicleVan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/bg_input_outline"
             android:backgroundTint="@android:color/white"
             android:orientation="vertical"
@@ -284,89 +229,63 @@
                     android:id="@+id/btnEditVan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="8dp"
                     android:text="Edit"
                     android:textColor="#2B8F3F"
-                    android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="BASE FEE"
+                android:textColor="#2B8F3F"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvVanBaseFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
+                android:text="RATE PER KM"
+                android:textColor="#2B8F3F"
+                android:textSize="10sp"
+                android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvVanRate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
 
+            <TextView
+                android:id="@+id/tvVanStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#B00020"
+                android:visibility="gone" />
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="PER KM"
-                        android:textColor="#2B8F3F"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvVanRate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minHeight="20dp"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        tools:text="₱25" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="MAX WEIGHT"
-                        android:textColor="#2B8F3F"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvVanMaxWeight"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minHeight="20dp"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        tools:text="800 kg" />
-                </LinearLayout>
-            </LinearLayout>
         </LinearLayout>
 
+        <!-- TRUCK -->
+
         <LinearLayout
-            android:id="@+id/cardVehicleTruck"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/bg_input_outline"
             android:backgroundTint="@android:color/white"
             android:orientation="vertical"
@@ -391,81 +310,57 @@
                     android:id="@+id/btnEditTruck"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="8dp"
                     android:text="Edit"
                     android:textColor="#2B8F3F"
-                    android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="BASE FEE"
+                android:textColor="#2B8F3F"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTruckBaseFee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal">
+                android:text="RATE PER KM"
+                android:textColor="#2B8F3F"
+                android:textSize="10sp"
+                android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvTruckRate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
 
-                </LinearLayout>
+            <TextView
+                android:id="@+id/tvTruckStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#B00020"
+                android:visibility="gone" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="PER KM"
-                        android:textColor="#2B8F3F"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvTruckRate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minHeight="20dp"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        tools:text="₱40" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="MAX WEIGHT"
-                        android:textColor="#2B8F3F"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvTruckMaxWeight"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:minHeight="20dp"
-                        android:textColor="@android:color/black"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        tools:text="3000 kg" />
-                </LinearLayout>
-            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>
+
 </ScrollView>

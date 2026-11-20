@@ -1,194 +1,121 @@
+
 package com.example.sulitpackgoui.rider
 
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RiderDatabase {
 
-    private var database =
-        FirebaseFirestore.getInstance()
-
+    private val database = FirebaseFirestore.getInstance()
 
     fun saveRider(
         rider: Rider,
         onResult: (Boolean, String) -> Unit
     ) {
-
-        database
-            .collection("riders")
+        database.collection("riders")
             .document(rider.uid)
             .set(rider)
             .addOnSuccessListener {
-
-                onResult(
-                    true,
-                    "Rider saved successfully."
-                )
+                onResult(true, "Rider saved successfully.")
             }
             .addOnFailureListener { error ->
-
-                var message =
-                    "Failed to save rider."
-
-
-                if (error.message != null) {
-
-                    message =
-                        error.message.toString()
-                }
-
-
                 onResult(
                     false,
-                    message
+                    error.message ?: "Failed to save rider."
                 )
             }
     }
-
 
     fun getRider(
         uid: String,
         onResult: (Boolean, String, Rider?) -> Unit
     ) {
-
         if (uid.isBlank()) {
-
-            onResult(
-                false,
-                "Invalid rider ID.",
-                null
-            )
-
+            onResult(false, "Invalid rider ID.", null)
             return
         }
 
-
-        database
-            .collection("riders")
+        database.collection("riders")
             .document(uid)
             .get()
             .addOnSuccessListener { document ->
 
-                var rider =
-                    document.toObject(
-                        Rider::class.java
-                    )
-
+                val rider = document.toObject(Rider::class.java)
 
                 if (rider == null) {
-
                     onResult(
                         false,
                         "Rider profile not found.",
                         null
                     )
-
                 } else {
-
-                    onResult(
-                        true,
-                        "Rider found.",
-                        rider
-                    )
+                    onResult(true, "Rider found.", rider)
                 }
             }
             .addOnFailureListener { error ->
-
-                var message =
-                    "Failed to get rider."
-
-
-                if (error.message != null) {
-
-                    message =
-                        error.message.toString()
-                }
-
-
                 onResult(
                     false,
-                    message,
+                    error.message ?: "Failed to get rider.",
                     null
                 )
             }
     }
 
-
+    // Update availability using the latest Firestore data.
     fun updateAvailability(
         rider: Rider,
         isAvailable: Boolean,
         onResult: (Boolean, String) -> Unit
     ) {
-
         if (rider.uid.isBlank()) {
-
-            onResult(
-                false,
-                "Rider is not logged in."
-            )
-
+            onResult(false, "Rider is not logged in.")
             return
         }
 
-
-        if (isAvailable) {
-
-            if (rider.currentOrderId.isNotBlank()) {
-
-                onResult(
-                    false,
-                    "Finish your current delivery first."
-                )
-
-                return
-            }
-        }
-
-
-        database
+        val riderReference = database
             .collection("riders")
             .document(rider.uid)
-            .update(
+
+        database.runTransaction { transaction ->
+
+            val riderDocument = transaction.get(riderReference)
+
+            if (!riderDocument.exists()) {
+                throw IllegalStateException("Rider profile not found.")
+            }
+
+            val currentOrderId =
+                riderDocument.getString("currentOrderId") ?: ""
+
+            if (currentOrderId.isNotBlank()) {
+                throw IllegalStateException(
+                    "Finish your current delivery first."
+                )
+            }
+
+            transaction.update(
+                riderReference,
                 "isAvailable",
                 isAvailable
             )
-            .addOnSuccessListener {
 
-                rider.isAvailable =
-                    isAvailable
+            isAvailable
 
+        }.addOnSuccessListener { updatedAvailability ->
 
-                if (isAvailable) {
+            rider.isAvailable = updatedAvailability
 
-                    onResult(
-                        true,
-                        "You are now available."
-                    )
-
-                } else {
-
-                    onResult(
-                        true,
-                        "You are now unavailable."
-                    )
-                }
+            if (updatedAvailability) {
+                onResult(true, "You are now available.")
+            } else {
+                onResult(true, "You are now unavailable.")
             }
-            .addOnFailureListener { error ->
 
-                var message =
-                    "Failed to update availability."
+        }.addOnFailureListener { error ->
 
-
-                if (error.message != null) {
-
-                    message =
-                        error.message.toString()
-                }
-
-
-                onResult(
-                    false,
-                    message
-                )
-            }
+            onResult(
+                false,
+                error.message ?: "Failed to update availability."
+            )
+        }
     }
 }
